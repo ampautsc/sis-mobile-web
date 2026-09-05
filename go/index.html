@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get Sis</title>
+<style>
+  body { margin: 0; background: #0f1115; color: #f4f1ea; font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 60px; }
+  h1 { font-weight: 600; letter-spacing: 1px; margin: 0 0 6px; }
+  p.sub { color: #8b93a3; margin: 0 0 28px; }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; }
+  .card { flex: 1 1 280px; background: #1a1d24; border-radius: 16px; padding: 20px; }
+  .card h2 { margin: 0 0 4px; font-size: 20px; }
+  .card .what { color: #8b93a3; font-size: 14px; margin: 0 0 14px; }
+  .qr { background: #fff; border-radius: 12px; padding: 12px; display: inline-block; }
+  .qr canvas, .qr img { display: block; }
+  a.open { display: inline-block; margin-top: 14px; color: #0f1115; background: #c9b27c; border-radius: 10px; padding: 10px 14px; text-decoration: none; font-weight: 600; }
+  code { display: block; margin-top: 12px; color: #8b93a3; font-size: 11px; word-break: break-all; }
+  .note { color: #8b93a3; font-size: 14px; margin-top: 28px; }
+  .beta h2 { color: #e06c75; } .stable h2 { color: #98c379; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sis</h1>
+  <p class="sub">Two copies of me on your phone, and both sit in Expo Go's Projects list once you are signed in: <b>Sis</b> (stable, what you promoted) and <b>Sis Beta</b> (every merge). Tap either there. This page is the fallback for a phone that is not signed in.</p>
+  <div class="row">
+    <section class="card beta">
+      <h2>Beta</h2>
+      <p class="what">New features first. If it misbehaves, open stable.</p>
+      <div class="qr" id="qr-beta"></div>
+      <a class="open" id="open-beta" href="#">Open beta in Expo Go</a>
+      <code id="link-beta"></code>
+    </section>
+    <section class="card stable">
+      <h2>Stable</h2>
+      <p class="what">What you promoted. The fallback.</p>
+      <div class="qr" id="qr-stable"></div>
+      <a class="open" id="open-stable" href="#">Open stable in Expo Go</a>
+      <code id="link-stable"></code>
+    </section>
+  </div>
+  <p class="note">Scan with the iPhone camera, or tap the button on the phone itself. Requires the Expo Go app and being signed in to it. This page is published by the release pipeline; nothing on it depends on a laptop.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  // Each copy of Sis is its own EAS project; ids and runtime are baked in by the pipeline (scripts/stamp-go-page.mjs).
+  var PROJECTS = { beta: "a1aaa1ba-bf5b-411c-939d-394ca3a2e78e", stable: "87560b61-3cd2-48dc-860c-793c1e49ad68" };
+  var RUNTIME = "exposdk:57.0.0";
+  function link(channel) {
+    return "exp://u.expo.dev/" + PROJECTS[channel] + "?channel-name=" + channel + "&runtime-version=" + encodeURIComponent(RUNTIME);
+  }
+  ["beta", "stable"].forEach(function (ch) {
+    var url = link(ch);
+    new QRCode(document.getElementById("qr-" + ch), { text: url, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M });
+    document.getElementById("open-" + ch).href = url;
+    document.getElementById("link-" + ch).textContent = url;
+  });
+</script>
+</body>
+</html>
